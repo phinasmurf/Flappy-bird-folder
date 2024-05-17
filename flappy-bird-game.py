@@ -10,6 +10,7 @@ clock = pygame.time.Clock()
 mouse_pos = pygame.mouse.get_pos()
 game_active = True
 game_start = False
+start_time = 0
 
 #Functions
 def pile_movement(pile_list):
@@ -21,12 +22,18 @@ def pile_movement(pile_list):
             elif piles_rect.y < 200:
                 screen.blit(pile_down, piles_rect)
 
-            
-
         pile_list = [pile for pile in pile_list if pile.right > 0]
         return pile_list  
     else:
-        return [] 
+        return []
+
+#def display_score():
+     #current_time = (pygame.time.get_ticks() / 1000)
+
+     #score surface
+     #score_font = pygame.font.Font('font/Pixeltype.ttf', 50)
+     #score_surface = font.render(int(current_time), False,(64, 64, 64) )
+     #screen.blit(score_surface, current_time)
 
 #Baground surfaces
 sky_bg = pygame.image.load('graphics/sky.png').convert()
@@ -48,7 +55,7 @@ bird_rect = main_bird.get_rect(center = (150, 200))
 bird_gravity = 0
 
 #piles
-pile_up = pygame.image.load('graphics/piles/up_pile.png').convert_alpha()
+pile_up = pygame.image.load('graphics/piles/up_piles.png').convert_alpha()
 pile_up_rect = pile_up.get_rect(midtop = (600, 200))
 
 pile_down = pygame.image.load('graphics/piles/down_pipe.png').convert_alpha()
@@ -58,7 +65,7 @@ pile_list = ''
 
 #Timer
 pile_timer = pygame.USEREVENT + 1
-pygame.time.set_timer(pile_timer, 1600)
+pygame.time.set_timer(pile_timer, 1400)
 
 while True:
     #check for player-input to close the game
@@ -72,6 +79,7 @@ while True:
             if event.key == pygame.K_SPACE: 
                 game_start = True
                 bird_gravity = -13
+                start_time = int(pygame.time.get_ticks()/1000)
         
     
         if event.type == pygame.MOUSEBUTTONDOWN:
@@ -81,7 +89,7 @@ while True:
         if game_start == True:
             if event.type == pile_timer and game_active:
                 if randint (0,2):
-                    pile_list.append(pile_up.get_rect(midbottom = (randint(900,1100), randint(600, 700))))
+                    pile_list.append(pile_up.get_rect(midtop = (randint(900,1100), randint(200, 325))))
                 else:
                     pile_list.append(pile_down.get_rect(midbottom = (randint(900,1100), randint(100,200))))
 
@@ -110,8 +118,7 @@ while True:
 
         #pile movement
         pile_list = pile_movement(pile_list)
-        #screen.blit(pile_up, pile_up_rect)
-        #screen.blit(pile_down, pile_down_rect)
+        #display_score()
     
     else:
         screen.fill((94, 129, 162))
