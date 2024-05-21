@@ -1,5 +1,4 @@
 import pygame 
-from sys import exit
 from random import randint
 
 #Important variables
@@ -11,6 +10,7 @@ mouse_pos = pygame.mouse.get_pos()
 game_active = True
 game_start = False
 start_time = 0
+points = 0
 
 #Functions
 def pile_movement(pile_list):
@@ -27,18 +27,39 @@ def pile_movement(pile_list):
     else:
         return []
 
-#def display_score():
-     #current_time = (pygame.time.get_ticks() / 1000)
+def update_points(pile_list):
+    global points
+    score_font = pygame.font.Font('font/Pixeltype.ttf', 50)
 
-     #score surface
-     #score_font = pygame.font.Font('font/Pixeltype.ttf', 50)
-     #score_surface = font.render(int(current_time), False,(64, 64, 64) )
-     #screen.blit(score_surface, current_time)
+    if pile_list:
+        for piles_ract in pile_list:
+            if piles_ract.right == (200, (0, 400)):
+                points += 1
+                print(points)
+               
+    score_surface = font.render(str(points), False,(64, 64, 64))
+    score_rect = score_surface.get_rect(center = (400, 50))
+    screen.blit(score_surface, score_rect)
+
+
+def collisions(bird_rect, piles):
+    if piles:
+         for piles_rect in piles:
+             if bird_rect.colliderect(piles_rect):
+                return False
+    return True 
+
+def collision_ground(bird_rect, ground_rect):
+    if ground_rect:
+        if bird_rect.colliderect(ground_rect):
+            return False
+    return True
+
 
 #Baground surfaces
 sky_bg = pygame.image.load('graphics/sky.png').convert()
-ground_bg1 = pygame.image.load('graphics/ground.png').convert()
-ground_rect1 = ground_bg1.get_rect( topleft = (0,325))
+ground_bg = pygame.image.load('graphics/ground.png').convert()
+ground_rect = ground_bg.get_rect( topleft = (0,325))
 
 #Text surfaces
 font = pygame.font.Font('font/Pixeltype.ttf', 50) 
@@ -61,7 +82,7 @@ pile_up_rect = pile_up.get_rect(midtop = (600, 200))
 pile_down = pygame.image.load('graphics/piles/down_pipe.png').convert_alpha()
 pile_down_rect = pile_down.get_rect(midbottom = (600, 200))
 
-pile_list = ''
+pile_list = []
 
 #Timer
 pile_timer = pygame.USEREVENT + 1
@@ -78,13 +99,13 @@ while True:
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE: 
                 game_start = True
-                bird_gravity = -13
-                start_time = int(pygame.time.get_ticks()/1000)
+                bird_gravity = -11
+                    #start_time = pygame.time.get_ticks()
         
-    
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            if bird_rect.collidepoint(mouse_pos): 
-                print(mouse_pos)
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_SPACE and game_active == False:
+                game_active = True
+                
 
         if game_start == True:
             if event.type == pile_timer and game_active:
@@ -96,7 +117,7 @@ while True:
     if game_active:
         #Bagground
         screen.blit(sky_bg, (0,0))
-        screen.blit(ground_bg1, ground_rect1)
+        screen.blit(ground_bg, ground_rect)
     
         #Player gravity
         if game_start == False:
@@ -106,23 +127,20 @@ while True:
             bird_rect.y += bird_gravity
             if bird_rect.bottom > 325:
                 bird_rect.bottom = 337
-                #game_active = False
+                game_active = False
         screen.blit(main_bird, bird_rect)
-        
-        #piles
-        #pile_up_rect.left -= 4
-        #if pile_up_rect.right < 0:
-        #    pile_up_rect.left = 820
-        #if pile_up_rect.colliderect(bird_rect):
-        #    game_active = False
 
         #pile movement
         pile_list = pile_movement(pile_list)
-        #display_score()
+        update_points(pile_list)
+        game_active = collisions(bird_rect, pile_list)
+        game_active = collision_ground(bird_rect, ground_rect)
     
     else:
         screen.fill((94, 129, 162))
         screen.blit(end_text, (320, 50))
+        pile_list.clear()
+        bird_rect.midbottom = (150, 200)
 
     pygame.display.update()
     clock.tick(60)
