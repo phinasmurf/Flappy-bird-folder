@@ -16,7 +16,7 @@ points = 0
 def pile_movement(pile_list):
     if pile_list:
         for piles_rect in pile_list:
-            piles_rect.x -= 4
+            piles_rect.x -= 5
             if piles_rect.y > 201:
                 screen.blit(pile_up, piles_rect)
             elif piles_rect.y < 200:
@@ -33,7 +33,7 @@ def update_points(pile_list):
 
     if pile_list:
         for piles_ract in pile_list:
-            if piles_ract.right == (200, (0, 400)):
+            if piles_ract.centerx == 150:
                 points += 1
                 print(points)
                
