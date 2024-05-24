@@ -33,11 +33,11 @@ def update_points(pile_list):
 
     if pile_list:
         for piles_ract in pile_list:
-            if piles_ract.centerx == 150:
+            if piles_ract.centerx < 150:
                 points += 1
                 print(points)
                
-    score_surface = font.render(str(points), False,(64, 64, 64))
+    score_surface = score_font.render(str(points), False,(64, 64, 64))
     score_rect = score_surface.get_rect(center = (400, 50))
     screen.blit(score_surface, score_rect)
 
