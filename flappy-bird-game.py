@@ -13,16 +13,6 @@ start_time = 0
 points = 0
 
 #Functions
-def pile_movement(pile_list):
-    for pipe in pile_list:
-        pipe.rect.x -= 5
-        if pipe.rect.y > 201:
-            screen.blit(pile_up, pipe)
-        elif pipe.rect.y < 200:
-            screen.blit(pile_down, pipe)
-
-    pile_list = [pipe for pipe in pile_list if pipe.rect.right > 0]
-    return pile_list
 
 def update_points(pile_list):
     global points
@@ -80,9 +70,34 @@ class Pipe:
     def __init__(self):
         self.point = False
         if randint (0,2):
-            self.rect = pile_up.get_rect(midtop = (randint(900,1100), randint(200, 325)))
+            self.rect_up = pile_up.get_rect(midtop = (randint(900,1100), randint(200, 325)))
         else:
-            self.rect = pile_down.get_rect(midbottom = (randint(900,1100), randint(100,200)))
+            self.rect_down = pile_down.get_rect(midbottom = (randint(900,1100), randint(100,200)))
+
+    def moving_pipes(self):
+        global pile_list
+
+        for pipe in pile_list:
+            self.rect.x -= 5 
+             
+        
+        pile_list = [pipe for pipe in pile_list if pipe.rect.right > 0]
+        return pile_list
+    
+    def update(self):
+        self.moving_pipes()
+
+#def pile_movement(pile_list):
+    #for pipe in pile_list:
+        #pipe.rect.x -= 5
+        #if self.rect_up.rect.y > 201:
+            #screen.blit(pile_up, pipe)
+        #elif self.rect_down.rect.y < 200:
+            #screen.blit(pile_down, pipe)
+         
+       
+pipe = Pipe()
+    
 
 #Timer
 pile_timer = pygame.USEREVENT + 1
@@ -127,7 +142,7 @@ while True:
         screen.blit(main_bird, bird_rect)
 
         #pile movement
-        pile_list = pile_movement(pile_list)
+        pipe.update()
         update_points(pile_list)
 
 
