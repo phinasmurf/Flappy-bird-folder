@@ -77,9 +77,9 @@ class Pipe:
     def moving_pipes(self):
         global pile_list
 
-        for pipe in pile_list:
-            self.rect.x -= 5 
-             
+        #for pipe in pile_list:
+            #self.rect.x -= 5 
+              
         
         pile_list = [pipe for pipe in pile_list if pipe.rect.right > 0]
         return pile_list
