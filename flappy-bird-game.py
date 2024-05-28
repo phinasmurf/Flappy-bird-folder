@@ -11,8 +11,19 @@ game_active = True
 game_start = False
 start_time = 0
 points = 0
+test_font = pygame.font.Font('font/Pixeltype.ttf', 50)
 
 #Functions
+def pile_movement(pile_list):
+    for pipe in pile_list:
+        pipe.rect.x -= 5
+        if pipe.rect.y > 201:
+            screen.blit(pile_up, pipe)
+        elif pipe.rect.y < 200:
+            screen.blit(pile_down, pipe)
+
+    pile_list = [pipe for pipe in pile_list if pipe.rect.right > 0]
+    return pile_list
 
 def update_points(pile_list):
     global points
@@ -22,11 +33,13 @@ def update_points(pile_list):
         if pipe.rect.centerx < 150 and not pipe.point:
             points += 1
             pipe.point = True
-            print(points)
                
     score_surface = score_font.render(str(points), False,(64, 64, 64))
     score_rect = score_surface.get_rect(center = (400, 50))
-    screen.blit(score_surface, score_rect)
+    if game_start:
+        screen.blit(score_surface, score_rect)
+    else:
+        return False
 
 
 def collisions(bird_rect, pipes):
@@ -70,34 +83,9 @@ class Pipe:
     def __init__(self):
         self.point = False
         if randint (0,2):
-            self.rect_up = pile_up.get_rect(midtop = (randint(900,1100), randint(200, 325)))
+            self.rect = pile_up.get_rect(midtop = (randint(900,1100), randint(200, 325)))
         else:
-            self.rect_down = pile_down.get_rect(midbottom = (randint(900,1100), randint(100,200)))
-
-    def moving_pipes(self):
-        global pile_list
-
-        #for pipe in pile_list:
-            #self.rect.x -= 5 
-              
-        
-        pile_list = [pipe for pipe in pile_list if pipe.rect.right > 0]
-        return pile_list
-    
-    def update(self):
-        self.moving_pipes()
-
-#def pile_movement(pile_list):
-    #for pipe in pile_list:
-        #pipe.rect.x -= 5
-        #if self.rect_up.rect.y > 201:
-            #screen.blit(pile_up, pipe)
-        #elif self.rect_down.rect.y < 200:
-            #screen.blit(pile_down, pipe)
-         
-       
-pipe = Pipe()
-    
+            self.rect = pile_down.get_rect(midbottom = (randint(900,1100), randint(100,200)))
 
 #Timer
 pile_timer = pygame.USEREVENT + 1
@@ -114,9 +102,9 @@ while True:
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE: 
                 game_start = True
-                bird_gravity = -11
-                    #start_time = pygame.time.get_ticks()
-        
+                bird_gravity = -9
+        #start_time = pygame.time.get_ticks()
+                    
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE and game_active == False:
                 game_active = True
@@ -142,18 +130,24 @@ while True:
         screen.blit(main_bird, bird_rect)
 
         #pile movement
-        pipe.update()
+        pile_list = pile_movement(pile_list)
         update_points(pile_list)
-
 
         if collision_ground(bird_rect, ground_rect) or collisions(bird_rect, pile_list):
             game_active = False
      
     else:
-        screen.fill((94, 129, 162))
-        screen.blit(end_text, (320, 50))
+        score_message = test_font.render(f'Your score: {points}', False, (64, 64, 64))
+        score_message_rect = score_message.get_rect(center = (400, 350))
         pile_list.clear()
         bird_rect.midbottom = (150, 200)
+        screen.fill((94, 129, 162))
+        game_start = False
 
+        if points == 0:
+           screen.blit(end_text, (320, 50))
+        else:
+            screen.blit(score_message,(320, 70))
+            
     pygame.display.update()
-    clock.tick(60)
+    clock.tick(60) 
