@@ -12,9 +12,11 @@ game_start = False
 start_time = 0
 points = 0
 test_font = pygame.font.Font('font/Pixeltype.ttf', 50)
+started_time = 0
+
 
 #Functions
-def pile_movement(pile_list):
+def pile_movement(pile_list: list):
     for pipe in pile_list:
         pipe.rect.x -= 5
         if pipe.rect.y > 201:
@@ -27,12 +29,15 @@ def pile_movement(pile_list):
 
 def update_points(pile_list):
     global points
+    global start_time
     score_font = pygame.font.Font('font/Pixeltype.ttf', 50)
 
     for pipe in pile_list:
         if pipe.rect.centerx < 150 and not pipe.point:
             points += 1
+            start_time += 1
             pipe.point = True
+        
                
     score_surface = score_font.render(str(points), False,(64, 64, 64))
     score_rect = score_surface.get_rect(center = (400, 50))
@@ -104,6 +109,11 @@ while True:
                 game_start = True
                 bird_gravity = -9
         #start_time = pygame.time.get_ticks()
+
+
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_SPACE and pile_list == []:
+                points = 0
                     
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE and game_active == False:
@@ -124,9 +134,10 @@ while True:
         elif game_start == True:
             bird_gravity += 1
             bird_rect.y += bird_gravity
-            if bird_rect.bottom > 325:
+            if bird_rect.bottom > 325 or bird_rect.bottom < 0:
                 bird_rect.bottom = 337
                 game_active = False
+            
         screen.blit(main_bird, bird_rect)
 
         #pile movement
@@ -144,10 +155,7 @@ while True:
         screen.fill((94, 129, 162))
         game_start = False
 
-        if points == 0:
-           screen.blit(end_text, (320, 50))
-        else:
-            screen.blit(score_message,(320, 70))
+        screen.blit(score_message,(290, 70))
             
     pygame.display.update()
     clock.tick(60) 
